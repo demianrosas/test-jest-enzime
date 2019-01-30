@@ -50,7 +50,7 @@ jobs: # a job is a set of step that you can execute.
             - savecache
             - testapp
             - covupload:
-              token: $codecov_token
+                token: $codecov_token
 
 workflows:
   version: 2
