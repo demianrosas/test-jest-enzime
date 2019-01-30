@@ -6,7 +6,7 @@ executors: # configuration of image where the jobs will be executed
             - image: circleci/node
 
 commands: # commands that you can configure to use within jobs
-  testApp: # name of the command
+  testapp: # name of the command
     description: "A command to test the app"
     steps:
       - run:
@@ -35,4 +35,4 @@ jobs: # a job is a set of step that you can execute.
         steps:
             - checkout
             - savecache
-            - testApp
+            - testapp
