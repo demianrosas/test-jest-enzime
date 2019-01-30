@@ -1,0 +1,26 @@
+version: 2.1
+
+executors: # configuration of image where the jobs will be executed
+    my-ejecutor:
+        docker:
+            - image: circleci/node
+
+commands: # commands that you can configure to use within jobs
+  sayhello: # name of the command
+    description: "A very simple command for demonstration purposes"
+    parameters:
+      to:
+        type: string
+        default: "Hello World"
+    steps:
+      - run:
+            name: "Say Hello"
+            command: echo "Hello" << parameters.to >>
+
+jobs: # a job is a set of step that you can execute.
+    build:
+        executor: my-executor
+        steps:
+            - checkout
+            - sayhello:
+              to: "Demian"
