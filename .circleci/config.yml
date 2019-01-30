@@ -1,7 +1,7 @@
 version: 2.1
 
 executors: # configuration of image where the jobs will be executed
-    my-ejecutor:
+    my-executor:
         docker:
             - image: circleci/node
 
