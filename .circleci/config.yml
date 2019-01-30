@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov
+
 executors: # configuration of image where the jobs will be executed
     my-executor:
         docker:
@@ -11,7 +14,7 @@ commands: # commands that you can configure to use within jobs
     steps:
       - run:
             name: "Test"
-            command: CI=true yarn test
+            command: CI=true yarn test --coverage
   savecache:
     description: "Command to install dependecy and keep in the cache"
     steps:
@@ -28,11 +31,24 @@ commands: # commands that you can configure to use within jobs
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+  covupload:
+    description: "Command to upload reports to codecov"
+    parameters:
+      token:
+        type: string
+    steps:
+      - codecov/upload:
+          file: coverage/*.json
+          token: << parameters.token >>
+          flags: frontend
 
 jobs: # a job is a set of step that you can execute.
     build:
+        context: test
         executor: my-executor
         steps:
             - checkout
             - savecache
             - testapp
+            - covupload:
+              token: $codecov_token
