@@ -6,16 +6,12 @@ executors: # configuration of image where the jobs will be executed
             - image: circleci/node
 
 commands: # commands that you can configure to use within jobs
-  sayhello: # name of the command
-    description: "A very simple command for demonstration purposes"
-    parameters:
-      to:
-        type: string
-        default: "Hello World"
+  testApp: # name of the command
+    description: "A command to test the app"
     steps:
       - run:
-            name: "Say Hello"
-            command: echo "Hello" << parameters.to >>
+            name: "Test"
+            command: CI=true yarn test
   savecache:
     description: "Command to install dependecy and keep in the cache"
     steps:
@@ -39,5 +35,4 @@ jobs: # a job is a set of step that you can execute.
         steps:
             - checkout
             - savecache
-            - sayhello:
-                to: "Demian"
+            - testApp
