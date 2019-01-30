@@ -53,7 +53,7 @@ jobs: # a job is a set of step that you can execute.
               token: $codecov_token
 
 workflows:
-  version: 2.1
+  version: 2
   main:
     jobs:
       - build_1:
