@@ -43,8 +43,7 @@ commands: # commands that you can configure to use within jobs
           flags: frontend
 
 jobs: # a job is a set of step that you can execute.
-    build:
-        context: test
+    build_1:
         executor: my-executor
         steps:
             - checkout
@@ -52,3 +51,10 @@ jobs: # a job is a set of step that you can execute.
             - testapp
             - covupload:
               token: $codecov_token
+
+workflows:
+  version: 2.1
+  main:
+    jobs:
+      - build_1:
+          context: test
