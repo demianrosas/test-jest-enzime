@@ -16,11 +16,28 @@ commands: # commands that you can configure to use within jobs
       - run:
             name: "Say Hello"
             command: echo "Hello" << parameters.to >>
+  savecache:
+    description: "Command to install dependecy and keep in the cache"
+    steps:
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
 
 jobs: # a job is a set of step that you can execute.
     build:
         executor: my-executor
         steps:
             - checkout
+            - savecache
             - sayhello:
               to: "Demian"
