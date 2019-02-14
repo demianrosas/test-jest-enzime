@@ -6,9 +6,27 @@ orbs:
 executors: # configuration of image where the jobs will be executed
     my-executor:
         docker:
-            - image: circleci/node
+            - image: circleci/node:10.15.0
 
 commands: # commands that you can configure to use within jobs
+  npmupdate:
+    description: "Update npm to last version"
+    steps:
+        - run:
+            name: "Npm update"
+            command: sudo npm install -g npm@latest
+        - run:
+            name: "Npm version"
+            command: npm --version
+  yarnupdate:
+    description: "Update yarn to the last version"
+    steps:
+        - run:
+            name: "Yarn update"
+            command: sudo npm install --global yarn
+        - run:
+            name: "Yarn version"
+            command: yarn --version
   testapp: # name of the command
     description: "A command to test the app"
     steps:
@@ -16,21 +34,21 @@ commands: # commands that you can configure to use within jobs
             name: "Test"
             command: CI=true yarn test --coverage
   savecache:
-    description: "Command to install dependecy and keep in the cache"
+    description: "Command to install dependecy and keep in the cache "
     steps:
       # Download and cache dependencies
       - restore_cache:
+          name: Restore Yarn Package Cache
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: yarn install
-
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
       - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - ~/.cache/yarn
   covupload:
     description: "Command to upload reports to codecov"
     parameters:
@@ -47,6 +65,8 @@ jobs: # a job is a set of step that you can execute.
         executor: my-executor
         steps:
             - checkout
+            - npmupdate
+            - yarnupdate
             - savecache
             - testapp
             - covupload:
