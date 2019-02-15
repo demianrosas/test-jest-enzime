@@ -6,29 +6,29 @@ jobs:
         steps:
           - checkout
           - run:
-            name: "Npm update"
-            command: sudo npm install -g npm@latest
+                name: "Npm update"
+                command: sudo npm install -g npm@latest
           - run:
-            name: "Npm version"
-            command: npm --version
+                name: "Npm version"
+                command: npm --version
           - run:
-            name: "Yarn update"
-            command: sudo npm install --global yarn
+                name: "Yarn update"
+                command: sudo npm install --global yarn
           - run:
-            name: "Yarn version"
-            command: yarn --version
+                name: "Yarn version"
+                command: yarn --version
           - restore_cache:
-            name: Restore Yarn Package Cache
-            keys:
-              - yarn-packages-{{ checksum "yarn.lock" }}
+                name: Restore Yarn Package Cache
+                keys:
+                  - yarn-packages-{{ checksum "yarn.lock" }}
           - run:
-            name: Install Dependencies
-            command: yarn install --frozen-lockfile
+                name: Install Dependencies
+                command: yarn install --frozen-lockfile
           - save_cache:
-            name: Save Yarn Package Cache
-            key: yarn-packages-{{ checksum "yarn.lock" }}
-            paths:
-              - ~/.cache/yarn
+                name: Save Yarn Package Cache
+                key: yarn-packages-{{ checksum "yarn.lock" }}
+                paths:
+                  - ~/.cache/yarn
 
 workflows:
   version: 2
