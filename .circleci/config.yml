@@ -1,80 +1,37 @@
-version: 2.1
-
-orbs:
-  codecov: codecov/codecov@1.0.2
-
-executors: # configuration of image where the jobs will be executed
-    my-executor:
+version: 2
+jobs:
+    build:
         docker:
-            - image: circleci/node:10.15.0
-
-commands: # commands that you can configure to use within jobs
-  npmupdate:
-    description: "Update npm to last version"
-    steps:
-        - run:
+          - image: circleci/node:10.15.0
+        steps:
+          - checkout
+          - run:
             name: "Npm update"
             command: sudo npm install -g npm@latest
-        - run:
+          - run:
             name: "Npm version"
             command: npm --version
-  yarnupdate:
-    description: "Update yarn to the last version"
-    steps:
-        - run:
+          - run:
             name: "Yarn update"
             command: sudo npm install --global yarn
-        - run:
+          - run:
             name: "Yarn version"
             command: yarn --version
-  testapp: # name of the command
-    description: "A command to test the app"
-    steps:
-      - run:
-            name: "Test"
-            command: CI=true yarn test --coverage
-  savecache:
-    description: "Command to install dependecy and keep in the cache "
-    steps:
-      # Download and cache dependencies
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-  covupload:
-    description: "Command to upload reports to codecov"
-    parameters:
-      token:
-        type: string
-    steps:
-      - codecov/upload:
-          file: coverage/*.json
-          token: << parameters.token >>
-          flags: frontend
-
-jobs: # a job is a set of step that you can execute.
-    build_1:
-        executor: my-executor
-        steps:
-            - checkout
-            - npmupdate
-            - yarnupdate
-            - savecache
-            - testapp
-            - covupload:
-                token: $codecov_token
+          - restore_cache:
+            name: Restore Yarn Package Cache
+            keys:
+              - yarn-packages-{{ checksum "yarn.lock" }}
+          - run:
+            name: Install Dependencies
+            command: yarn install --frozen-lockfile
+          - save_cache:
+            name: Save Yarn Package Cache
+            key: yarn-packages-{{ checksum "yarn.lock" }}
+            paths:
+              - ~/.cache/yarn
 
 workflows:
   version: 2
-  main:
+  build_and_test:
     jobs:
-      - build_1:
-          context: test
+      - build
